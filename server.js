@@ -7,7 +7,9 @@ let app = express();
 app.listen(4000);
 
 process.env = { priority: true };
-
+app.get("/", (req, res) => {
+  res.send("🚀 Server is running!");
+});
 class Main {
   constructor() {
     this._files = {};
@@ -163,3 +165,4 @@ result: ${!!result}
 }
 
 new Main();
+
